@@ -1,7 +1,14 @@
 import { Hono } from 'hono';
 
-const app = new Hono();
+import { api } from './api';
+import { addAuthHandlers } from './handlers/auth';
+import type { Env } from './types';
+
+const app = new Hono<Env>();
 
 app.get('/', (c) => c.text('Hello Hono!'));
+addAuthHandlers(app);
+
+app.route('/api/v2', api);
 
 export default app;
