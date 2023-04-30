@@ -1,5 +1,9 @@
 # Turborepo Remote Cache
 
+Turborepo Remote Cache's open source alternative.
+
+It supports Cloudflare Workers and Node.js (WIP).
+
 ## Development
 
 ### 1. Setup
