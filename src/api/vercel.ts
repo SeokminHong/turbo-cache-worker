@@ -3,9 +3,9 @@ import { Hono } from 'hono';
 import type { Env } from '../types';
 import { query } from '../utils/graphql';
 
-export const api = new Hono<Env>();
+export const vercelApi = new Hono<Env>();
 
-api
+vercelApi
   .get('/user', async ({ json, req }) => {
     const { data } = await query<{
       viewer: {

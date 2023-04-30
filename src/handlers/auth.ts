@@ -26,50 +26,46 @@ export function addAuthHandlers(app: Hono<Env>) {
         `https://github.com/login/oauth/authorize?client_id=${env.CLIENT_ID}&redirect_uri=${localRedirectUri}&scope=read:org,read:user`
       );
     })
-    .get(
-      '/turborepo/redirect',
-      async ({ req, env, redirect, status, text }) => {
-        const code = req.query('code') || '';
-        const redirectUri = req.cookie(REDIRECT_URL_KEY);
-        const { access_token: token } = await fetch(
-          `https://github.com/login/oauth/access_token?client_id=${env.CLIENT_ID}&client_secret=${env.CLIENT_SECRET}&code=${code}`,
-          {
-            method: 'POST',
-            headers: {
-              Accept: 'application/json',
-              'User-Agent': 'CF Worker',
-            },
-          }
-        ).then((res) => res.json<TokenResponse>());
-        const { data } = await query<{
-          viewer: {
-            organizations: {
-              nodes: { login: string }[];
-            };
+    .get('/turborepo/redirect', async ({ req, env, redirect, text }) => {
+      const code = req.query('code') || '';
+      const redirectUri = req.cookie(REDIRECT_URL_KEY);
+      const { access_token: token } = await fetch(
+        `https://github.com/login/oauth/access_token?client_id=${env.CLIENT_ID}&client_secret=${env.CLIENT_SECRET}&code=${code}`,
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'User-Agent': 'CF Worker',
+          },
+        }
+      ).then((res) => res.json<TokenResponse>());
+      const { data } = await query<{
+        viewer: {
+          organizations: {
+            nodes: { login: string }[];
           };
-        }>(
-          /* GraphQL */ `
-            query {
-              viewer {
-                organizations(first: 100) {
-                  nodes {
-                    login
-                  }
+        };
+      }>(
+        /* GraphQL */ `
+          query {
+            viewer {
+              organizations(first: 100) {
+                nodes {
+                  login
                 }
               }
             }
-          `,
-          `Bearer ${token}`
-        );
-        const orgs = data.viewer.organizations.nodes.map(({ login }) => login);
-        if (!orgs.find((org) => org === env.ALLOWED_ORG)) {
-          status(403);
-          return text('Forbidden');
-        }
-
-        return redirect(`${redirectUri}?token=${token}`);
+          }
+        `,
+        `Bearer ${token}`
+      );
+      const orgs = data.viewer.organizations.nodes.map(({ login }) => login);
+      if (!orgs.find((org) => org === env.ALLOWED_ORG)) {
+        return text('Forbidden', 403);
       }
-    )
+
+      return redirect(`${redirectUri}?token=${token}`);
+    })
     .get('/turborepo/success', ({ html }) => {
       // Close the window
       return html(`<script> window.close() </script>`);

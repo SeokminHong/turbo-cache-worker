@@ -1,2 +1,7 @@
-name = ""
+name = "turbo-cache"
 compatibility_date = "2023-01-01"
+
+[[r2_buckets]]
+binding = "TURBO_ARTIFACTS"
+bucket_name = "turbo-artifacts"
+preview_bucket_name = "preview-turbo-artifacts"
