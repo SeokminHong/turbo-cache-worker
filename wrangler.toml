@@ -1,5 +1,6 @@
 name = "turbo-cache"
 compatibility_date = "2023-01-01"
+main = "./src/index.ts"
 
 [[r2_buckets]]
 binding = "TURBO_ARTIFACTS"
