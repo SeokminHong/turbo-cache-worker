@@ -55,21 +55,6 @@ async function requestToken(c: Context<Env>) {
   return tokenString;
 }
 
-const BUCKET_NAME = encodeURIComponent('momenti-prod-registry-0');
-const object = encodeURIComponent(`registry_npm/%40mure%2Fpackage-1.0.0.tgz`);
-export async function get(c: Context<Env>) {
-  const token = await requestToken(c);
-  const res = await fetch(
-    `${API_URL}/storage/v1/b/${BUCKET_NAME}/o/${object}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  ).then((r) => r.json());
-  return c.json(res);
-}
-
 export async function read(c: Context<Env>) {
   const id = c.req.param('id');
   const token = await requestToken(c);
