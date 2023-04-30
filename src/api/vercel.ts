@@ -2,10 +2,12 @@ import { Hono } from 'hono';
 
 import type { Env } from '../types';
 import { query } from '../utils/graphql';
+import { auth } from '../middlewares/auth';
 
 export const vercelApi = new Hono<Env>();
 
 vercelApi
+  .use('*', auth)
   .get('/user', async ({ json, req }) => {
     const { data } = await query<{
       viewer: {

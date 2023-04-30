@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 
 import type { Env } from '../types';
 import { query } from '../utils/graphql';
+import { checkAuth } from '../utils/auth';
 
 const REDIRECT_URL_KEY = 'turbo-cache-redirect-uri';
 
@@ -39,29 +40,9 @@ export function addAuthHandlers(app: Hono<Env>) {
           },
         }
       ).then((res) => res.json<TokenResponse>());
-      const { data } = await query<{
-        viewer: {
-          organizations: {
-            nodes: { login: string }[];
-          };
-        };
-      }>(
-        /* GraphQL */ `
-          query {
-            viewer {
-              organizations(first: 100) {
-                nodes {
-                  login
-                }
-              }
-            }
-          }
-        `,
-        `Bearer ${token}`
-      );
-      const orgs = data.viewer.organizations.nodes.map(({ login }) => login);
-      if (!orgs.find((org) => org === env.ALLOWED_ORG)) {
-        return text('Forbidden', 403);
+      const status = await checkAuth({ token, allowedOrg: env.ALLOWED_ORG });
+      if (status !== 'OK') {
+        return text('Unauthorized', 401);
       }
 
       return redirect(`${redirectUri}?token=${token}`);
