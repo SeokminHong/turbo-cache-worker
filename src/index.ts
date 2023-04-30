@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 
-import { api } from './api';
+import { api } from './api/vercel';
 import { addAuthHandlers } from './handlers/auth';
 import type { Env } from './types';
 

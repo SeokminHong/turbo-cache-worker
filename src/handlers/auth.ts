@@ -62,11 +62,6 @@ export function addAuthHandlers(app: Hono<Env>) {
           `Bearer ${token}`
         );
         const orgs = data.viewer.organizations.nodes.map(({ login }) => login);
-        console.log(
-          orgs,
-          env.ALLOWED_ORG,
-          orgs.find((org) => org === env.ALLOWED_ORG)
-        );
         if (!orgs.find((org) => org === env.ALLOWED_ORG)) {
           status(403);
           return text('Forbidden');
