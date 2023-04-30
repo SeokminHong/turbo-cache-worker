@@ -1,6 +1,8 @@
 import { Hono } from 'hono';
 import { cache } from 'hono/cache';
 
+import { read as gcpRead, write as gcpWrite } from '../storages/gcp';
+import { read as r2Read, write as r2Write } from '../storages/r2';
 import type { Env } from '../types';
 
 export const artifactsApi = new Hono<Env>();
@@ -17,24 +19,24 @@ artifactsApi
       cacheName: 'artifacts',
     })
   )
-  .get('/artifacts/:id', async ({ env, req, text, body }) => {
-    const id = req.param('id');
-    console.log(req.query('teamId'), req.query('slug'));
-    const artifact = await env.TURBO_ARTIFACTS?.get(id).then((r) =>
-      r?.arrayBuffer()
-    );
-    if (!artifact) {
-      return text('Not found', 404);
+  .get('/artifacts/:id', async (c) => {
+    switch (c.env.STORAGE) {
+      case 'R2':
+        return r2Read(c);
+      case 'GCP':
+        return gcpRead(c);
+      default:
     }
-    return body(artifact, 200, {
-      'Content-Type': 'application/octet-stream',
-    });
   })
-  .post('/artifacts/events', async ({ req, json }) => {
+  .post('/artifacts/events', async ({ json }) => {
     return json({});
   })
-  .put('/artifacts/:id', async ({ env, req }) => {
-    const id = req.param('id');
-    const body = req.body;
-    env.TURBO_ARTIFACTS?.put(id, body);
+  .put('/artifacts/:id', async (c) => {
+    switch (c.env.STORAGE) {
+      case 'R2':
+        return r2Write(c);
+      case 'GCP':
+        return gcpWrite(c);
+      default:
+    }
   });
