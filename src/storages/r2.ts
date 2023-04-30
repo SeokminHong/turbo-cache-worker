@@ -1,23 +1,23 @@
-import { Context } from 'hono';
+import type { Context } from 'hono';
 
-import { Env } from '../types';
+import { Env, env } from '../utils/env';
 
-export async function read({ req, env, text, body }: Context<Env>) {
-  const id = req.param('id');
-  const artifact = await env.TURBO_ARTIFACTS?.get(id).then((r) =>
-    r?.arrayBuffer()
-  );
+export async function read(c: Context<Env>) {
+  const id = c.req.param('id');
+  const artifact = await env(c, 'TURBO_ARTIFACTS')
+    ?.get(id)
+    .then((r) => r?.arrayBuffer());
   if (!artifact) {
-    return text('Not found', 404);
+    return c.text('Not found', 404);
   }
-  return body(artifact, 200, {
+  return c.body(artifact, 200, {
     'Content-Type': 'application/octet-stream',
   });
 }
 
-export async function write({ req, env, text }: Context<Env>) {
-  const id = req.param('id');
-  const body = req.body;
-  env.TURBO_ARTIFACTS?.put(id, body);
-  return text('OK');
+export async function write(c: Context<Env>) {
+  const id = c.req.param('id');
+  const body = c.req.body;
+  env(c, 'TURBO_ARTIFACTS')?.put(id, body);
+  return c.text('OK');
 }

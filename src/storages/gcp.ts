@@ -1,13 +1,13 @@
-import { Context } from 'hono';
+import type { Context } from 'hono';
 import { SignJWT, importPKCS8 } from 'jose';
 
-import { Env } from '../types';
+import { Env, env } from '../utils/env';
 
 const API_URL = 'https://storage.googleapis.com';
 const SCOPE = 'https://www.googleapis.com/auth/cloud-platform';
 
-async function encodeJwt({ env }: Context<Env>) {
-  const config = JSON.parse(atob(env.GOOGLE_SERVICE_ACCOUNT));
+async function encodeJwt(c: Context<Env>) {
+  const config = JSON.parse(atob(env(c, 'GOOGLE_SERVICE_ACCOUNT')));
   const alg = 'RS256';
   const privateKey = await importPKCS8(config.private_key, alg);
   const s = new SignJWT({ scope: SCOPE })
@@ -29,7 +29,7 @@ type Token = {
 };
 
 async function requestToken(c: Context<Env>) {
-  const cachedToken = await c.env.GCP_TOKEN?.get<string>('key');
+  const cachedToken = await env(c, 'GCP_TOKEN')?.get<string>('key');
   if (cachedToken) {
     return cachedToken;
   }
@@ -49,7 +49,7 @@ async function requestToken(c: Context<Env>) {
   if (!tokenString) {
     throw new Error('No token found');
   }
-  c.env.GCP_TOKEN?.put('key', tokenString, {
+  env(c, 'GCP_TOKEN')?.put('key', tokenString, {
     expirationTtl: 60 * 55,
   });
   return tokenString;
@@ -58,7 +58,7 @@ async function requestToken(c: Context<Env>) {
 export async function read(c: Context<Env>) {
   const id = c.req.param('id');
   const token = await requestToken(c);
-  const bucket = encodeURIComponent(c.env.BUCKET_NAME);
+  const bucket = encodeURIComponent(env(c, 'BUCKET_NAME'));
   const object = encodeURIComponent(id);
   return fetch(`${API_URL}/storage/v1/b/${bucket}/o/${object}?alt=media`, {
     headers: {
@@ -70,7 +70,7 @@ export async function read(c: Context<Env>) {
 export async function write(c: Context<Env>) {
   const id = c.req.param('id');
   const token = await requestToken(c);
-  const bucket = encodeURIComponent(c.env.BUCKET_NAME);
+  const bucket = encodeURIComponent(env(c, 'BUCKET_NAME'));
   const object = encodeURIComponent(id);
   return fetch(
     `${API_URL}/upload/storage/v1/b/${bucket}/o?uploadType=multipart&name=${object}`,

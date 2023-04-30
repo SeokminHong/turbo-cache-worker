@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
 
-import type { Env } from '../types';
-import { query } from '../utils/graphql';
 import { auth } from '../middlewares/auth';
+import { Env, env } from '../utils/env';
+import { query } from '../utils/graphql';
 
 export const vercelApi = new Hono<Env>();
 
@@ -36,15 +36,16 @@ vercelApi
       },
     });
   })
-  .get('/teams', async ({ env, json }) => {
-    return json({
+  .get('/teams', async (c) => {
+    const allowedOrg = env(c, 'ALLOWED_ORG');
+    return c.json({
       teams: [
         {
           createdAt: 0,
           created: '1900-01-01T00:00:00Z',
-          id: env.ALLOWED_ORG,
-          slug: env.ALLOWED_ORG,
-          name: env.ALLOWED_ORG,
+          id: allowedOrg,
+          slug: allowedOrg,
+          name: allowedOrg,
           membership: {
             role: 'MEMBER',
           },

@@ -1,3 +1,5 @@
+import { Context } from 'hono';
+
 export type Env = {
   Bindings: {
     GITHUB_CLIENT_ID: string;
@@ -11,3 +13,10 @@ export type Env = {
     GCP_TOKEN?: KVNamespace;
   };
 };
+
+export function env<K extends keyof Env['Bindings']>(
+  c: Context<Env>,
+  key: K
+): Env['Bindings'][K] {
+  return c.env?.[key] ?? (process.env[key] as Env['Bindings'][K]);
+}

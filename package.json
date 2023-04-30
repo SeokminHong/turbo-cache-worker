@@ -1,15 +1,18 @@
 {
   "scripts": {
     "dev": "wrangler dev src/index.ts",
-    "deploy": "wrangler publish --minify src/index.ts"
+    "deploy": "wrangler publish --minify src/index.ts",
+    "build": "esbuild src/server.ts --bundle --platform=node --target=node16 --outfile=dist/server.js"
   },
   "dependencies": {
+    "@hono/node-server": "^0.6.0",
     "hono": "^3.1.6",
     "jose": "^4.14.4"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230404.0",
     "@types/node": "^18.16.3",
+    "esbuild": "^0.17.18",
     "prettier": "^2.8.8",
     "typescript": "^5.0.4",
     "wrangler": "^2.17.0"
