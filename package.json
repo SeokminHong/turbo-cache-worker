@@ -1,8 +1,11 @@
 {
+  "name": "turbo-cache",
+  "type": "module",
   "scripts": {
     "dev": "wrangler dev src/index.ts",
     "deploy": "wrangler publish --minify src/index.ts",
-    "build": "esbuild src/server.ts --bundle --platform=node --target=node16 --outfile=dist/server.js"
+    "build": "esbuild src/server.ts --bundle --platform=node --target=node16 --format=esm --outfile=dist/server.js",
+    "watch": "tsx watch src/server.ts"
   },
   "dependencies": {
     "@hono/node-server": "^0.6.0",
@@ -14,6 +17,7 @@
     "@types/node": "^18.16.3",
     "esbuild": "^0.17.18",
     "prettier": "^2.8.8",
+    "tsx": "^3.12.7",
     "typescript": "^5.0.4",
     "wrangler": "^2.17.0"
   }

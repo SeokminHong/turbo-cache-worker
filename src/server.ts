@@ -2,4 +2,6 @@ import { serve } from '@hono/node-server';
 
 import app from '.';
 
-serve({ ...app, port: 8787 });
+serve({ fetch: app.fetch, port: 8787 }, ({ address, port }) => {
+  console.log(`Server listening on ${address}:${port}`);
+});

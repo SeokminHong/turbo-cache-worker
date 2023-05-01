@@ -4,6 +4,24 @@ Turborepo Remote Cache's open source alternative.
 
 It supports Cloudflare Workers and Node.js (WIP).
 
+## Usage
+
+1. Login and link
+    ```sh
+    # In a monorepo
+    turbo login --login YOUR_DOMAIN --api YOUR_DOMAIN/api
+    turbo link --login YOUR_DOMAIN --api YOUR_DOMAIN/api
+    ```
+2. Edit `.turbo/config.json`
+    ```json
+    {
+      "apiurl": "YOUR_DOMAIN/api",
+      "loginurl": "YOUR_DOMAIN",
+      "teamslug": null,
+      "teamid": "YOUR_ORG"
+    }
+    ```
+
 ## Development
 
 ### 1. Setup
@@ -73,26 +91,14 @@ cp .dev.vars.example .dev.vars
 6. Replace `GCP_TOKEN`'s IDs on `wrangler.toml`
 7. Set `BUCKET_NAME` on `.dev.vars`
 
-## Deployment
+## Deployment (Cloudflare Workers)
 
 1. Do the above "development" steps
 2. Run `wrangler publish`
 3. Set variables and secrets
 
-## Usage
+## Deployment (Node.js)
 
-1. Login and link
-    ```sh
-    # In a monorepo
-    turbo login --login YOUR_DOMAIN --api YOUR_DOMAIN/api
-    turbo link --login YOUR_DOMAIN --api YOUR_DOMAIN/api
-    ```
-2. Modify `.turbo/config.json`
-    ```json
-    {
-      "apiurl": "YOUR_DOMAIN/api",
-      "loginurl": "YOUR_DOMAIN",
-      "teamslug": null,
-      "teamid": "YOUR_ORG"
-    }
-    ```
+1. Do the above "development" steps via using GCP
+2. Run `docker build . -t turbo-cache`
+3. Run `docker run --env-file .dev.vars -it -p 8787:8787 turbo-cache`
