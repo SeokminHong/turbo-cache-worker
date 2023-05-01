@@ -10,7 +10,7 @@ const app = new Hono<Env>();
 
 app.use('*', logger());
 
-app.get('/', (c) => c.text('Hello Hono!'));
+app.get('/', (c) => c.text('Hello!'));
 addAuthHandlers(app);
 
 app.route('/api/v2', vercelApi);
