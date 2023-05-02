@@ -42,10 +42,7 @@ export function addAuthHandlers(app: Hono<Env>) {
           },
         }
       ).then((res) => res.json<TokenResponse>());
-      const status = await checkAuth({
-        token,
-        allowedOrg: env(c, 'ALLOWED_ORG'),
-      });
+      const status = await checkAuth(c, token);
       if (status !== 'OK') {
         return c.text('Unauthorized', 401);
       }

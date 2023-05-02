@@ -1,19 +1,14 @@
+import { Context } from 'hono';
+
 import { query } from './graphql';
+import { Env, env } from './env';
 
-type Arg = (
-  | {
-      token: string;
-      authHeader?: never;
-    }
-  | {
-      authHeader: string;
-      token?: never;
-    }
-) & {
-  allowedOrg: string;
-};
-
-export async function checkAuth({ token, authHeader, allowedOrg }: Arg) {
+export async function checkAuth(c: Context<Env>, token?: string) {
+  const tokenString = token ?? c.req.header('Authorization')?.split(' ')[1];
+  if (!tokenString) {
+    return 'Unauthorized';
+  }
+  const allowedOrg = env(c, 'ALLOWED_ORG');
   const { data } = await query<{
     viewer: {
       organizations: {
@@ -32,7 +27,7 @@ export async function checkAuth({ token, authHeader, allowedOrg }: Arg) {
         }
       }
     `,
-    authHeader || `Bearer ${token}`
+    `Bearer ${tokenString}`
   );
   const orgs = data.viewer.organizations.nodes.map(({ login }) => login);
   if (!orgs.find((org) => org === allowedOrg)) {
