@@ -52,14 +52,14 @@ cp .dev.vars.example .dev.vars
     wrangler r2 bucket create turbo-artifacts
     wrangler r2 bucket create preview-turbo-artifacts
     ```
-2. Comment `GCP_TOKEN` on `wrangler.toml`
+2. Comment `TOKENS` on `wrangler.toml`
     ```diff
     - [[kv_namespaces]]
-    - binding = "GCP_TOKEN"
+    - binding = "TOKENS"
     - id = "c26c953846004524851a7bca67b624e6"
     - preview_id = "b4ec6bc69c3e415289ec3d47fde77712"
     + # [[kv_namespaces]]
-    + # binding = "GCP_TOKEN"
+    + # binding = "TOKENS"
     + # id = "c26c953846004524851a7bca67b624e6"
     + # preview_id = "b4ec6bc69c3e415289ec3d47fde77712"
     ```
@@ -85,10 +85,10 @@ cp .dev.vars.example .dev.vars
     ```
 5. Create KV namespaces for GCP tokens
     ```sh
-    wrangler kv:namespace create GCP_TOKEN
-    wrangler kv:namespace create GCP_TOKEN --preview
+    wrangler kv:namespace create TOKENS
+    wrangler kv:namespace create TOKENS --preview
     ```
-6. Replace `GCP_TOKEN`'s IDs on `wrangler.toml`
+6. Replace `TOKENS`'s IDs on `wrangler.toml`
 7. Set `BUCKET_NAME` on `.dev.vars`
 
 ## Deployment (Cloudflare Workers)

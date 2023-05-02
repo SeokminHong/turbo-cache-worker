@@ -10,7 +10,7 @@ export type Env = {
     STORAGE: 'R2' | 'GCP';
 
     TURBO_ARTIFACTS?: R2Bucket;
-    GCP_TOKEN?: KVNamespace;
+    TOKENS?: KVNamespace;
   };
 };
 

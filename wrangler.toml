@@ -8,6 +8,6 @@ bucket_name = "turbo-artifacts"
 preview_bucket_name = "preview-turbo-artifacts"
 
 [[kv_namespaces]]
-binding = "GCP_TOKEN"
+binding = "TOKENS"
 id = "c26c953846004524851a7bca67b624e6"
 preview_id = "b4ec6bc69c3e415289ec3d47fde77712"

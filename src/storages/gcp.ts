@@ -29,7 +29,7 @@ type Token = {
 };
 
 async function requestToken(c: Context<Env>) {
-  const cachedToken = await env(c, 'GCP_TOKEN')?.get<string>('key');
+  const cachedToken = await env(c, 'TOKENS')?.get<string>('gcp');
   if (cachedToken) {
     return cachedToken;
   }
@@ -49,7 +49,7 @@ async function requestToken(c: Context<Env>) {
   if (!tokenString) {
     throw new Error('No token found');
   }
-  env(c, 'GCP_TOKEN')?.put('key', tokenString, {
+  env(c, 'TOKENS')?.put('gcp', tokenString, {
     expirationTtl: 60 * 55,
   });
   return tokenString;
