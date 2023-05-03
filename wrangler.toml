@@ -3,6 +3,12 @@ compatibility_date = "2023-01-01"
 main = "./src/index.ts"
 usage_model = "bundled"
 
+[vars]
+GITHUB_CLIENT_ID = ""
+ALLOWED_ORG = ""
+STORAGE = ""
+BUCKET_NAME = ""
+
 [[r2_buckets]]
 binding = "TURBO_ARTIFACTS"
 bucket_name = "turbo-artifacts"
