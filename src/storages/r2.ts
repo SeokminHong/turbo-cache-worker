@@ -6,12 +6,14 @@ export async function read(c: Context<Env>) {
   const id = c.req.param('id');
   const artifact = await env(c, 'TURBO_ARTIFACTS')
     ?.get(id)
-    .then((r) => r?.arrayBuffer());
+    .then((r) => r?.body);
   if (!artifact) {
     return c.text('Not found', 404);
   }
-  return c.body(artifact, 200, {
-    'Content-Type': 'application/octet-stream',
+  return c.newResponse(artifact, {
+    headers: {
+      'Content-Type': 'application/octet-stream',
+    },
   });
 }
 

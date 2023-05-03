@@ -60,9 +60,17 @@ export async function read(c: Context<Env>) {
   const token = await requestToken(c);
   const bucket = encodeURIComponent(env(c, 'BUCKET_NAME'));
   const object = encodeURIComponent(id);
-  return fetch(`${API_URL}/storage/v1/b/${bucket}/o/${object}?alt=media`, {
+  const res = await fetch(
+    `${API_URL}/storage/v1/b/${bucket}/o/${object}?alt=media`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return c.newResponse(res.body, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/octet-stream',
     },
   });
 }
@@ -72,6 +80,8 @@ export async function write(c: Context<Env>) {
   const token = await requestToken(c);
   const bucket = encodeURIComponent(env(c, 'BUCKET_NAME'));
   const object = encodeURIComponent(id);
+  const { readable, writable } = new TransformStream();
+  c.req.body?.pipeTo(writable);
   return fetch(
     `${API_URL}/upload/storage/v1/b/${bucket}/o?uploadType=multipart&name=${object}`,
     {
@@ -79,7 +89,7 @@ export async function write(c: Context<Env>) {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      body: await c.req.arrayBuffer(),
+      body: readable,
     }
-  );
+  ).then(() => c.text('OK'));
 }
