@@ -16,4 +16,9 @@ addAuthHandlers(app);
 app.route('/api/v2', vercelApi);
 app.route('/api/v8', artifactsApi);
 
+app.onError((err, c) => {
+  console.error(JSON.stringify(err));
+  return c.text('Internal Server Error', 500);
+});
+
 export default app;
