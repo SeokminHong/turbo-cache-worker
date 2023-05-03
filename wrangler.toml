@@ -6,7 +6,9 @@ usage_model = "bundled"
 [vars]
 GITHUB_CLIENT_ID = ""
 ALLOWED_ORG = ""
+# R2 or GCP
 STORAGE = ""
+# Using GCP
 BUCKET_NAME = ""
 
 [[r2_buckets]]
